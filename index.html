@@ -11,27 +11,73 @@
             text-align: center;
             margin: 50px;
         }
+        html, body {
+            margin: 0;
+            height: 100%;
+            overflow: hidden;               /* prevents scrolling */
+        }
+        .flender-bg {
+            position: fixed;
+            inset: 0;                        /* top:0 right:0 bottom:0 left:0 */
+            background: url('flender-service-bg.png') center center / cover no-repeat;
+            background-color: #01030a;       /* fallback while image loads */
+        }
     </style>
 </head>
 <body>
 
-    <h2>Hi! I am Alfred, your FLENDER AI Assistent. At present, my key focus is on providing you with information related to your FLENDER gear units. 
-Please, accept my apologies if my knowledge is currently limited. I am just starting my job and ride the learning curve.
-I am more than happy to send you a service recommendation which is related to the type and age of your equipment.
-Isn't that a good starting point for successful collaboration? If my powers are too limited related to your inquiry, allow my human colleagues to contact you. We would therefore need your contact information like your Email and phone number. Thank you.</h2>
-    <p>Click the chat button to start a conversation with our support team.</p>
+<div class="flender-bg"></div>
 
 <script type='text/javascript'>
-	function initEmbeddedMessaging() {
-		try {
-			embeddedservice_bootstrap.settings.language = 'en_US'; // For example, enter 'en' or 'en-US'
+    window.SITE_CONTEXT = {
+        isLoggedIn: true,    
+        language: "en",     
+        userId: "0039Z00002BAa0uQAD",          
+        roles: "user,admin,customer", 
+        clientIp: "192.168.255.255"            
+    };
+</script>
+
+<script type='text/javascript'>
+    // load hidden pre-chat fields with user context using SF dispatched event "onEmbeddedMessagingReady"
+    window.addEventListener('onEmbeddedMessagingReady', () => {
+        try {
+            const ctx = window.SITE_CONTEXT || {};
+            const isLoggedIn = !!ctx.isLoggedIn;
+
+            const contextGeneral = {
+                "WebPageURL": String(window.location.href),
+                "WebIsLoggedIn": String(isLoggedIn),
+                "WebClientIP": String(ctx.clientIp || ""),
+                "WebLanguage": String(document.documentElement.lang || "")
+            };
+
+            const contextLoggedIn = !isLoggedIn ? {} : {
+                "WebUserId": String(ctx.userId || ""),
+                "WebRoles": String(ctx.roles || "")//,
+                //"WebLanguage": String(ctx.language || "")
+            };
+
+            embeddedservice_bootstrap.prechatAPI.setHiddenPrechatFields({
+                ...contextGeneral,
+                ...contextLoggedIn
+            });
+        } catch (err) {
+			console.error('Error loading context information: ', err);
+		}
+    })
+
+    // loading embedded messaging
+    function initEmbeddedMessaging() {
+        try {
+			embeddedservice_bootstrap.settings.language = 'en_US'; // For example, enter 'en', 'en-US' or 'en_US'
 
 			embeddedservice_bootstrap.init(
-				'00D9Q00000FnzBa',
-				'Agentforce_Messaging',
-				'https://flender--test.sandbox.my.site.com/ESWAgentforceMessaging1759163126877',
+				'00D9Z00000PX42h',
+				'Mall_Demo_Agentforce_Messaging',
+				'https://flender--ibmdev.sandbox.my.site.com/ESWMallDemoAgentforceM1785964764088',
 				{
-					scrt2URL: 'https://flender--test.sandbox.my.salesforce-scrt.com'
+					scrt2URL: 'https://flender--ibmdev.sandbox.my.salesforce-scrt.com'
 				}
 			);
 		} catch (err) {
@@ -39,7 +85,8 @@ Isn't that a good starting point for successful collaboration? If my powers are 
 		}
 	};
 </script>
-<script type='text/javascript' src='https://flender--test.sandbox.my.site.com/ESWAgentforceMessaging1759163126877/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
+<script type='text/javascript' src='https://flender--ibmdev.sandbox.my.site.com/ESWMallDemoAgentforceM1785964764088/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
+
 
 </body>
 </html>
